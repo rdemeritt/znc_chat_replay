@@ -8,8 +8,8 @@ def buildArgParser():
         prog='replay', description='replay znc logs')
     parser.add_argument(
         '--file', required=True, help='Log file to replay')
-    # parser.add_argument(
-    #     "--2x", required=False, help='Double the speed I should playback the logs', action='store_true')
+    parser.add_argument(
+        '--double', required=False, help='Double the speed I should playback the logs', action='store_true')
     parser.add_argument("--start", required=False, help='Where to start the replay')
     parser.add_argument("--stop", required=False, help='Where to stop the replay')
     parser.add_argument(
@@ -23,6 +23,8 @@ def get_file_contents(_file):
 
 
 def print_delay(_log, _delay=0):
+    if args.double:
+        _delay = _delay / 2
     time.sleep(_delay)
     print(_log)
 
