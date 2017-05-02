@@ -1,6 +1,7 @@
 import argparse
 from datetime import datetime
 import time
+import colorize_nick as cn
 
 
 def buildArgParser():
@@ -27,7 +28,6 @@ def print_delay(_log, _delay=0):
         _delay = _delay / 2
     time.sleep(_delay)
     print(_log)
-
     return True
 
 
@@ -54,8 +54,13 @@ if args.file:
         print(err)
         exit(1)
 
+nick_dict = cn.build_nick_dict_from_znc_logs(logs)
+
 for log in logs:
-    cur_time = datetime.strptime(log[1:9], '%H:%M:%S')
+    try:
+        cur_time = datetime.strptime(log[1:9], '%H:%M:%S')
+    except Exception as err:
+        continue
 
     # check to see if logstop is defined.  if so, we want to use this to know when to stop processing
     try:
@@ -87,7 +92,7 @@ for log in logs:
     except:
         logstart = '00:00:00'
         prev_time = cur_time
-        print_delay(log)
+        print_delay(log.strip('\n'))
     else:
         if log[1:9] >= logstart:
             prev_time = cur_time
@@ -96,10 +101,14 @@ for log in logs:
             try:
                 sleep_sec
             except:
-                # print("no sleep")
-                print(log)
+                # sleep_sec not set...  should be our first log
+                # print(log.strip('\n'))
+                print(cn.colorize_nick_in_string(log, nick_dict))
             else:
-                print_delay(log, sleep_sec)
+                # print(nick_dict)
+                # cn.print_colored_logs(log, nick_dict)
+                # print_delay(log.strip('\n'), sleep_sec)
+                print_delay(cn.colorize_nick_in_string(log, nick_dict), sleep_sec)
 
 endtime = buildArgParser()
 
