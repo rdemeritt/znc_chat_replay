@@ -67,10 +67,8 @@ for log in logs:
         logstop
     except:
         pass
-        # logstop='99:99:99'
     else:
         if log[1:9] > logstop:
-            # print(log)
             endtime = datetime.now()
             print("END", endtime - starttime)
             exit(0)
@@ -80,10 +78,8 @@ for log in logs:
         prev_time
     # prev is not set... so our first run
     except:
-        # print("no prev")
         pass
     else:
-        # print("setting sleep_sec")
         sleep_sec = (cur_time - prev_time).total_seconds()
 
     # check to see if logstart is defined.  if so, we want to use this to know when to start processing logs
@@ -96,18 +92,13 @@ for log in logs:
     else:
         if log[1:9] >= logstart:
             prev_time = cur_time
-            # print("trying sleep_sec")
 
             try:
                 sleep_sec
             except:
                 # sleep_sec not set...  should be our first log
-                # print(log.strip('\n'))
                 print(cn.colorize_nick_in_string(log, nick_dict))
             else:
-                # print(nick_dict)
-                # cn.print_colored_logs(log, nick_dict)
-                # print_delay(log.strip('\n'), sleep_sec)
                 print_delay(cn.colorize_nick_in_string(log, nick_dict), sleep_sec)
 
 endtime = buildArgParser()
