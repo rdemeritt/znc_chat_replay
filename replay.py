@@ -66,13 +66,13 @@ for log in logs:
     try:
         logstop
     except:
-        logstop='99:99:99'
+        pass
+        # logstop='99:99:99'
     else:
         if log[1:9] > logstop:
             # print(log)
             endtime = datetime.now()
             print("END", endtime - starttime)
-            print("We will stop where you said to: %s" % args.stop)
             exit(0)
 
     # check to see if prev has been set yet
@@ -92,7 +92,7 @@ for log in logs:
     except:
         logstart = '00:00:00'
         prev_time = cur_time
-        print_delay(log.strip('\n'))
+        print_delay(cn.colorize_nick_in_string(log, nick_dict))
     else:
         if log[1:9] >= logstart:
             prev_time = cur_time
