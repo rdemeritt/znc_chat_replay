@@ -26,11 +26,21 @@ def get_file_contents(_file):
 
 
 def print_delay(_log, _delay=0):
+    # see if we should speed things up
     if args.double:
         _delay = _delay / 2
+
+    # see if we need to omit the timestamp
+    if args.no_time:
+        _log = _log[11:]
+
     time.sleep(_delay)
-    print(_log)
-    return True
+    try:
+        print(_log)
+    except:
+        return False
+    else:
+        return True
 
 
 args = buildArgParser()
@@ -90,19 +100,10 @@ for log in logs:
     except:
         logstart = '00:00:00'
         prev_time = cur_time
-
-        # see if we need to omit the timestamp
-        if args.no_time:
-            log = log[11:]
-
         print_delay(cn.colorize_nick_in_string(log, nick_dict))
     else:
         if log[1:9] >= logstart:
             prev_time = cur_time
-
-            # see if we need to omit the timestamp
-            if args.no_time:
-                log = log[11:]
 
             try:
                 sleep_sec
