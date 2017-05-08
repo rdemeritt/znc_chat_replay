@@ -13,7 +13,7 @@ def buildArgParser():
         '--double', required=False, help='Double the speed I should playback the logs', action='store_true')
     parser.add_argument('--start', required=False, help='Where to start the replay')
     parser.add_argument('--stop', required=False, help='Where to stop the replay')
-    parser.add_argument('--no-time', required=False, help='If set we will not display the time when replaying logs',
+    parser.add_argument('--no_time', required=False, help='If set we will not display the time when replaying logs',
                         action='store_true')
     parser.add_argument(
         '--verbose', required=False, help='Print a bit more information', action='store_true')
@@ -90,15 +90,20 @@ for log in logs:
     except:
         logstart = '00:00:00'
         prev_time = cur_time
-        if args.no-time:
+
+        # see if we need to omit the timestamp
+        if args.no_time:
             log = log[11:]
+
         print_delay(cn.colorize_nick_in_string(log, nick_dict))
     else:
         if log[1:9] >= logstart:
             prev_time = cur_time
 
-            if args.no - time:
+            # see if we need to omit the timestamp
+            if args.no_time:
                 log = log[11:]
+
             try:
                 sleep_sec
             except:
