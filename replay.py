@@ -11,8 +11,10 @@ def buildArgParser():
         '--file', required=True, help='Log file to replay')
     parser.add_argument(
         '--double', required=False, help='Double the speed I should playback the logs', action='store_true')
-    parser.add_argument("--start", required=False, help='Where to start the replay')
-    parser.add_argument("--stop", required=False, help='Where to stop the replay')
+    parser.add_argument('--start', required=False, help='Where to start the replay')
+    parser.add_argument('--stop', required=False, help='Where to stop the replay')
+    parser.add_argument('--no-time', required=False, help='If set we will not display the time when replaying logs',
+                        action='store_true')
     parser.add_argument(
         '--verbose', required=False, help='Print a bit more information', action='store_true')
     return parser.parse_args()
@@ -88,18 +90,22 @@ for log in logs:
     except:
         logstart = '00:00:00'
         prev_time = cur_time
-        print_delay(cn.colorize_nick_in_string(log[11:], nick_dict))
+        if args.no-time:
+            log = log[11:]
+        print_delay(cn.colorize_nick_in_string(log, nick_dict))
     else:
         if log[1:9] >= logstart:
             prev_time = cur_time
 
+            if args.no - time:
+                log = log[11:]
             try:
                 sleep_sec
             except:
                 # sleep_sec not set...  should be our first log
-                print(cn.colorize_nick_in_string(log[11:], nick_dict))
+                print(cn.colorize_nick_in_string(log, nick_dict))
             else:
-                print_delay(cn.colorize_nick_in_string(log[11:], nick_dict), sleep_sec)
+                print_delay(cn.colorize_nick_in_string(log, nick_dict), sleep_sec)
 
 endtime = buildArgParser()
 
