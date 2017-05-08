@@ -109,7 +109,7 @@ for log in logs:
                 sleep_sec
             except:
                 # sleep_sec not set...  should be our first log
-                print(cn.colorize_nick_in_string(log, nick_dict))
+                print_delay(cn.colorize_nick_in_string(log, nick_dict))
             else:
                 print_delay(cn.colorize_nick_in_string(log, nick_dict), sleep_sec)
 
