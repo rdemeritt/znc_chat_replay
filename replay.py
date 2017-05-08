@@ -88,7 +88,7 @@ for log in logs:
     except:
         logstart = '00:00:00'
         prev_time = cur_time
-        print_delay(cn.colorize_nick_in_string(log, nick_dict))
+        print_delay(cn.colorize_nick_in_string(log[11:], nick_dict))
     else:
         if log[1:9] >= logstart:
             prev_time = cur_time
@@ -97,9 +97,9 @@ for log in logs:
                 sleep_sec
             except:
                 # sleep_sec not set...  should be our first log
-                print(cn.colorize_nick_in_string(log, nick_dict))
+                print(cn.colorize_nick_in_string(log[11:], nick_dict))
             else:
-                print_delay(cn.colorize_nick_in_string(log, nick_dict), sleep_sec)
+                print_delay(cn.colorize_nick_in_string(log[11:], nick_dict), sleep_sec)
 
 endtime = buildArgParser()
 
