@@ -43,9 +43,26 @@ def print_delay(_log, _delay=0):
         return True
 
 
+def calculate_sleep_sec(_cur, _prev):
+    flipped = False
+    sleep_time = (cur_time - prev_time).total_seconds()
+
+    # test to see if we have fliped 24hours
+    if sleep_time < 0:
+        abs_sleep_time = abs(sleep_time)
+        flipped = True
+        sleep_time = 86400 - abs_sleep_time
+
+    if args.verbose:
+        print("cur_time: %s, prev_time: %s, sleep_time: %s, flipped: %s" % (cur_time, prev_time, sleep_time, flipped))
+
+    return sleep_time
+
+
 args = buildArgParser()
 
 starttime = datetime.now()
+started = False
 
 if args.start and args.stop:
     print (args.stop, args.start)
@@ -92,7 +109,7 @@ for log in logs:
     except:
         pass
     else:
-        sleep_sec = (cur_time - prev_time).total_seconds()
+        sleep_sec = calculate_sleep_sec(cur_time, prev_time)
 
     # check to see if logstart is defined.  if so, we want to use this to know when to start processing logs
     try:
@@ -102,13 +119,14 @@ for log in logs:
         prev_time = cur_time
         print_delay(cn.colorize_nick_in_string(log, nick_dict))
     else:
-        if log[1:9] >= logstart:
+        if log[1:9] >= logstart or started is True:
             prev_time = cur_time
 
             try:
                 sleep_sec
             except:
                 # sleep_sec not set...  should be our first log
+                started = True
                 print_delay(cn.colorize_nick_in_string(log, nick_dict))
             else:
                 print_delay(cn.colorize_nick_in_string(log, nick_dict), sleep_sec)
