@@ -45,7 +45,7 @@ def print_delay(_log, _delay=0):
 
 def calculate_sleep_sec(_cur, _prev):
     flipped = False
-    sleep_time = (cur_time - prev_time).total_seconds()
+    sleep_time = (_cur - _prev).total_seconds()
 
     # test to see if we have fliped 24hours
     if sleep_time < 0:
@@ -54,83 +54,88 @@ def calculate_sleep_sec(_cur, _prev):
         sleep_time = 86400 - abs_sleep_time
 
     if args.verbose:
-        print("cur_time: %s, prev_time: %s, sleep_time: %s, flipped: %s" % (cur_time, prev_time, sleep_time, flipped))
+        print("cur_time: %s, prev_time: %s, sleep_time: %s, flipped: %s" % (_cur, _prev, sleep_time, flipped))
 
     return sleep_time
 
 
+def main():
+    starttime = datetime.now()
+    started = False
+
+    if args.start and args.stop:
+        print (args.stop, args.start)
+        start = datetime.strptime(args.start, '%H:%M:%S')
+        stop = datetime.strptime(args.stop, '%H:%M:%S')
+        print("BEGIN", stop - start)
+
+    if args.start:
+        logstart = args.start
+
+    if args.stop:
+        logstop = args.stop
+
+    if args.file:
+        try:
+            logs = get_file_contents(args.file)
+        except Exception as err:
+            print(err)
+            exit(1)
+
+    nick_dict = cn.build_nick_dict_from_znc_logs(logs)
+
+    for log in logs:
+        try:
+            cur_time = datetime.strptime(log[1:9], '%H:%M:%S')
+        except Exception as err:
+            continue
+
+        # check to see if logstop is defined.  if so, we want to use this to know when to stop processing
+        try:
+            logstop
+        except:
+            pass
+        else:
+            if log[1:9] > logstop:
+                endtime = datetime.now()
+                print("END", endtime - starttime)
+                exit(0)
+
+        # check to see if prev has been set yet
+        try:
+            prev_time
+        # prev is not set... so our first run
+        except:
+            pass
+        else:
+            sleep_sec = calculate_sleep_sec(cur_time, prev_time)
+
+        # check to see if logstart is defined.  if so, we want to use this to know when to start processing logs
+        try:
+            logstart
+        except:
+            logstart = '00:00:00'
+            prev_time = cur_time
+            print_delay(cn.colorize_nick_in_string(log, nick_dict))
+        else:
+            if log[1:9] >= logstart or started is True:
+                prev_time = cur_time
+
+                try:
+                    sleep_sec
+                except:
+                    # sleep_sec not set...  should be our first log
+                    started = True
+                    print_delay(cn.colorize_nick_in_string(log, nick_dict))
+                else:
+                    print_delay(cn.colorize_nick_in_string(log, nick_dict), sleep_sec)
+
+    endtime = buildArgParser()
+
+    exit(0)
+
+
 args = buildArgParser()
 
-starttime = datetime.now()
-started = False
-
-if args.start and args.stop:
-    print (args.stop, args.start)
-    start = datetime.strptime(args.start, '%H:%M:%S')
-    stop = datetime.strptime(args.stop, '%H:%M:%S')
-    print("BEGIN", stop - start)
-
-if args.start:
-    logstart = args.start
-
-if args.stop:
-    logstop = args.stop
-
-if args.file:
-    try:
-        logs = get_file_contents(args.file)
-    except Exception as err:
-        print(err)
-        exit(1)
-
-nick_dict = cn.build_nick_dict_from_znc_logs(logs)
-
-for log in logs:
-    try:
-        cur_time = datetime.strptime(log[1:9], '%H:%M:%S')
-    except Exception as err:
-        continue
-
-    # check to see if logstop is defined.  if so, we want to use this to know when to stop processing
-    try:
-        logstop
-    except:
-        pass
-    else:
-        if log[1:9] > logstop:
-            endtime = datetime.now()
-            print("END", endtime - starttime)
-            exit(0)
-
-    # check to see if prev has been set yet
-    try:
-        prev_time
-    # prev is not set... so our first run
-    except:
-        pass
-    else:
-        sleep_sec = calculate_sleep_sec(cur_time, prev_time)
-
-    # check to see if logstart is defined.  if so, we want to use this to know when to start processing logs
-    try:
-        logstart
-    except:
-        logstart = '00:00:00'
-        prev_time = cur_time
-        print_delay(cn.colorize_nick_in_string(log, nick_dict))
-    else:
-        if log[1:9] >= logstart or started is True:
-            prev_time = cur_time
-
-            try:
-                sleep_sec
-            except:
-                # sleep_sec not set...  should be our first log
-                started = True
-                print_delay(cn.colorize_nick_in_string(log, nick_dict))
-            else:
-                print_delay(cn.colorize_nick_in_string(log, nick_dict), sleep_sec)
-
-endtime = buildArgParser()
-
-exit(0)
+if __name__ == '__main__':
+    main()
