@@ -47,7 +47,7 @@ def calculate_sleep_sec(_cur, _prev):
     flipped = False
     sleep_time = (_cur - _prev).total_seconds()
 
-    # test to see if we have fliped 24hours
+    # test to see if we have flipped 24hours
     if sleep_time < 0:
         abs_sleep_time = abs(sleep_time)
         flipped = True
