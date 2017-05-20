@@ -21,7 +21,7 @@ def buildArgParser():
 
 
 def get_file_contents(_file):
-    with open(_file) as file:
+    with open(_file, errors = 'replace') as file:
         return file.readlines()
 
 
@@ -79,7 +79,7 @@ def main():
         try:
             logs = get_file_contents(args.file)
         except Exception as err:
-            print(err)
+            print("ERROR:", err)
             exit(1)
 
     nick_dict = cn.build_nick_dict_from_znc_logs(logs)
